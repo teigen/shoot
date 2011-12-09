@@ -4,6 +4,7 @@ import unfiltered.request._
 import unfiltered.response.{Stream => _, _}
 import unfiltered.netty.cycle.Planify
 
+/* http://github.com/teigen/shoot */
 object Shoot extends App {
 
   /* sudoku solver */
@@ -29,7 +30,8 @@ object Shoot extends App {
       render(board)
 
     case POST(Params(params) & Path("/")) =>
-      val board = (0 until 81).map{ n => try{ params(n.toString).head.toInt } catch { case _ => 0 } }
+      val board = (0 until 81).map{ n =>
+        try{ params(n.toString).head.toInt } catch { case _ => 0 } }
       solve(board).headOption match {
         case Some(solved) => render(solved)
         case None => render(board, Some("#fail"))
@@ -53,22 +55,19 @@ object Shoot extends App {
     <body>
       {msg.toSeq.flatMap(m => <h1>{m}</h1>)}
       <div id="outer">
-      <div id="board">
       <form action="/" method="POST">
-        <table>{ table.flatMap{ row =>
+        <table id="board">{ table.flatMap{ row =>
         <tr>
           {row.flatMap{ case (column, name) =>
-            <td><input value={if (column == 0) "" else column.toString} size="1" maxlength="1" name={name.toString}/></td>
+            <td><input type="text" value={if (column == 0) "" else column.toString} size="1" maxlength="1" name={name.toString}/></td>
           }}
         </tr>}
-      } </table>
-        <input type="submit" value="solve" name="solve"/>
+      } <tr><td colspan="9"><input type="submit" value="solve" name="solve"/></td></tr>
+        </table>
       </form>
       </div>
-      </div>
     </body>
-  </html>)
-  }
+  </html>)}
 
   /* css */
   def css = CssContent ~> ResponseString("""
